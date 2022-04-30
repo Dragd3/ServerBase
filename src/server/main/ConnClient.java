@@ -7,11 +7,9 @@ import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.io.PrintStream;
 import java.net.Socket;
-import java.sql.Connection;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import server.bbdd.Connectivitat;
 
 import server.bbdd.Crides;
 
@@ -39,14 +37,14 @@ public class ConnClient extends Thread {
     @Override
     public void run() {
         ObjectOutputStream out = null;
-        BufferedReader in = null;
+        BufferedReader dataIn = null;
         PrintStream dataOut = null;
         Crides c = new Crides();
         sessio = new String();
 
         try {
             //Stream d'entrada de dades
-            in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+            dataIn = new BufferedReader(new InputStreamReader(client.getInputStream()));
             //Stream de sortida de dades
             dataOut = new PrintStream(client.getOutputStream());
             //Stream d'enviament d'objectes
@@ -55,7 +53,7 @@ public class ConnClient extends Thread {
             running = true;
             while (running) {
                 System.out.println("Client connectat: " + client.getInetAddress());
-                String line = in.readLine();
+                String line = dataIn.readLine();
                 //Si line == ";" es tanca el socket
                 while (!line.equals(";")) {
                     switch (line) {
@@ -65,7 +63,7 @@ public class ConnClient extends Thread {
                             //deslogueja i envia "LOGOUT"
                             if (!sessio.isEmpty()) {
                                 dataOut.println("CODI");
-                                codi = in.readLine();
+                                codi = dataIn.readLine();
                                 if (removeSession(codi)) {
                                     sessio = new String();
                                     dataOut.println("LOGGEDOUT");
@@ -81,9 +79,9 @@ public class ConnClient extends Thread {
                         case "1":
                             if (sessio.isEmpty()) {
                                 dataOut.println("user");
-                                String user = in.readLine();
+                                String user = dataIn.readLine();
                                 dataOut.println("password");
-                                String pass = in.readLine();
+                                String pass = dataIn.readLine();
                                 Usuari us;
                                 //Si existeix Usuari, es genera codi de sessio,
                                 //s'emmagatzema i s'envia al client.
@@ -107,13 +105,13 @@ public class ConnClient extends Thread {
                         //Enviar "2" per a crear usuari i despres dades
                         case "2":
                             dataOut.println("user");
-                            String name = in.readLine();
+                            String name = dataIn.readLine();
                             dataOut.println("password");
-                            String pwd = in.readLine();
+                            String pwd = dataIn.readLine();
                             dataOut.println("data de naixement (yyyy-MM-dd)");
-                            String birth = in.readLine();
+                            String birth = dataIn.readLine();
                             dataOut.println("mail");
-                            String mail = in.readLine();
+                            String mail = dataIn.readLine();
                             switch (c.create(name, pwd, mail, birth)) {
                                 case 0:
                                     //retorna "EXISTEIX" si existeix usuari o mail
@@ -128,21 +126,20 @@ public class ConnClient extends Thread {
                             }
                             break;
                         case "3":
-                        dataOut.println("CODI");
-                        codi = in.readLine();
-                        if (sessio.equals(codi)) {
-                            dataOut.println("OK");
-                            if (in.readLine().equals("READY")) {
-                            out.writeObject(sessions.get(codi));
-                            out.flush();
+                            dataOut.println("CODI");
+                            codi = dataIn.readLine();
+                            if (sessio.equals(codi)) {
+                                dataOut.println("READY");
+                                out.writeObject(sessions.get(codi));
+                                out.flush();
+                            } else {
+                                dataOut.println("NOK");
                             }
-                        }else{
-                            dataOut.println("NOK");
-                        }
-                        default: 
+                            break;
+                        default:
                             dataOut.println("CODI_NOK");
                     }
-                    line = in.readLine();
+                    line = dataIn.readLine();
 
                 }
                 //Si line == ";" desconecta socket. Envia "DISCONNECT" al client

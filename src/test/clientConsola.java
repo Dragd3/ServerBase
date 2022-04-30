@@ -38,6 +38,7 @@ public class clientConsola {
                 String pr = bin.readLine();
                 if (pr.equals("READY")) {
                     try {
+                        //Usuari u = (Usuari)in.readObject();
                         System.out.println(in.readObject());
                     } catch (ClassNotFoundException ex) {
                         Logger.getLogger(client.class.getName()).log(Level.SEVERE, null, ex);
