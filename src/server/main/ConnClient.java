@@ -4,6 +4,7 @@ import classes.Usuari;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintStream;
 import java.net.Socket;
@@ -36,6 +37,7 @@ public class ConnClient extends Thread {
      */
     @Override
     public void run() {
+        ObjectInputStream in = null;
         ObjectOutputStream out = null;
         BufferedReader dataIn = null;
         PrintStream dataOut = null;
