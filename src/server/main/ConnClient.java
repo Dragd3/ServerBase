@@ -11,6 +11,7 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import server.bbdd.Accions;
 
 import server.bbdd.Crides;
 
@@ -37,106 +38,90 @@ public class ConnClient extends Thread {
      */
     @Override
     public void run() {
-        ObjectInputStream in = null;
         ObjectOutputStream out = null;
-        BufferedReader dataIn = null;
+        ObjectInputStream in = null;
         PrintStream dataOut = null;
+        BufferedReader dataIn = null;
         Crides c = new Crides();
+        Accions a = new Accions(this);
         sessio = new String();
 
         try {
-            //Stream d'entrada de dades
-            dataIn = new BufferedReader(new InputStreamReader(client.getInputStream()));
             //Stream de sortida de dades
             dataOut = new PrintStream(client.getOutputStream());
+            //Stream d'entrada de dades
+            dataIn = new BufferedReader(new InputStreamReader(client.getInputStream()));
             //Stream d'enviament d'objectes
             out = new ObjectOutputStream(client.getOutputStream());
-            String codi;
+            //Stream d'entrada d'objectes
+            in = new ObjectInputStream(client.getInputStream());
+
             running = true;
             while (running) {
                 System.out.println("Client connectat: " + client.getInetAddress());
                 String line = dataIn.readLine();
                 //Si line == ";" es tanca el socket
                 while (!line.equals(";")) {
+                    /*
+                    "0" per a fer log out
+                    "1" per a fer login
+                    
+                    "10" per a crear Usuari
+                    "11" per a esborrar Usuari
+                    "12" per a rebre Usuari
+                    "14" per a canviar status d'admin
+                    "15" per a modificar password, mail o data
+                    
+                    "20" per a crear Esdeveniment
+                    "21" per a esborrar Esdeveniment
+                    "22" per a rebre tots els Esdeveniments
+                    "23" per a rebre Esdeveniments de forma parametritzada
+                    "24" per a modificar un Esdeveniment
+                    
+                    "30" per a afegir un assistent
+                    "31" per a eliminar un assistent
+                    */
                     switch (line) {
-                        //Envia "0" per a fer log out
                         case "0":
-                            //Si el client ha fet login, s'esborra memoria, es
-                            //deslogueja i envia "LOGOUT"
-                            if (!sessio.isEmpty()) {
-                                dataOut.println("CODI");
-                                codi = dataIn.readLine();
-                                if (removeSession(codi)) {
-                                    sessio = new String();
-                                    dataOut.println("LOGGEDOUT");
-                                } else {
-                                    dataOut.println("LOGNOTFOUND");
-                                }
-                            } else {
-                                //Envia "NOLOGGED" si el client no ha fet login
-                                dataOut.println("NOLOGGED");
-                            }
+                            sessio = a.logout(sessio, dataOut, dataIn);
                             break;
-                        //Enviar "1" per a fer login i despres credencials
                         case "1":
-                            if (sessio.isEmpty()) {
-                                dataOut.println("user");
-                                String user = dataIn.readLine();
-                                dataOut.println("password");
-                                String pass = dataIn.readLine();
-                                Usuari us;
-                                //Si existeix Usuari, es genera codi de sessio,
-                                //s'emmagatzema i s'envia al client.
-                                //"NOK" si no existeix. "LOGGED" si ja te sessio
-                                if (c.login(user, pass) != null) {
-                                    us = c.login(user, pass);
-                                    sessio = generarCodi(us);
-                                    if (putSession(sessio, us)) {
-                                        dataOut.println(sessio);
-                                    } else {
-                                        sessio = new String();
-                                        dataOut.println("ALREADY_LOGGED");
-                                    }
-                                } else {
-                                    dataOut.println("NOK");
-                                }
-                            } else {
-                                dataOut.println("ALREADY_LOGGED");
-                            }
+                            sessio = a.login(sessio, dataOut, dataIn);
                             break;
-                        //Enviar "2" per a crear usuari i despres dades
-                        case "2":
-                            dataOut.println("user");
-                            String name = dataIn.readLine();
-                            dataOut.println("password");
-                            String pwd = dataIn.readLine();
-                            dataOut.println("data de naixement (yyyy-MM-dd)");
-                            String birth = dataIn.readLine();
-                            dataOut.println("mail");
-                            String mail = dataIn.readLine();
-                            switch (c.create(name, pwd, mail, birth)) {
-                                case 0:
-                                    //retorna "EXISTEIX" si existeix usuari o mail
-                                    dataOut.println("EXISTEIX");
-                                    break;
-                                case 1:
-                                    dataOut.println("OK");
-                                    break;
-                                case -1:
-                                    dataOut.println("NOK");
-                                    break;
-                            }
+                        case "10":
+                            a.createUser(dataOut, dataIn);
                             break;
-                        case "3":
-                            dataOut.println("CODI");
-                            codi = dataIn.readLine();
-                            if (sessio.equals(codi)) {
-                                dataOut.println("READY");
-                                out.writeObject(sessions.get(codi));
-                                out.flush();
-                            } else {
-                                dataOut.println("NOK");
-                            }
+                        case "11":
+                            a.removeUsuari(sessio, dataOut, dataIn);
+                            break;
+                        case "12":
+                            a.sendUsusari(sessio, dataOut, dataIn, out);
+                            break;
+                        case "14":
+                            a.modifyAdmin(sessio, dataOut, dataIn);
+                            break;
+                        case "15":
+                            a.modifyUsuari(sessio, dataOut, dataIn);
+                            break;
+                        case "20":
+                            a.createEsdeveniment(sessio, dataOut, dataIn, in, out);
+                            break;
+                        case "21":
+                            a.removeEsdeveniment(sessio, dataOut, dataIn);
+                        case "22":
+                            a.showEsdeveniments(sessio, dataOut, dataIn, out);
+                            break;
+                        case "23":
+                            a.showEsdevenimentsParam(sessio, dataOut, dataIn, out);
+                            break;
+                        case "24":
+                            a.modifyEsdeveniments(sessio, dataOut, dataIn, in);
+                            break;
+                        case "30":
+                            a.addAssist(sessio, dataOut, dataIn);
+                            break;
+                        case "31":
+                            a.removeAssist(sessio, dataOut, dataIn);
                             break;
                         default:
                             dataOut.println("CODI_NOK");
@@ -207,6 +192,34 @@ public class ConnClient extends Thread {
         } else {
             return false;
         }
+    }
+
+    public boolean isUserOnline(String user) {
+        for (Usuari u : sessions.values()) {
+            if (u.getUser().equals(user)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public String getCodi(String user) {
+        for (String s : sessions.keySet()) {
+            if (getUsuari(s).getUser().equals(user)) {
+                return s;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Retorna un Usuari basat en el codi de login
+     *
+     * @param codi sessio loguejada
+     * @return Usuari que s'hi correspon
+     */
+    public Usuari getUsuari(String codi) {
+        return sessions.get(codi);
     }
 
     /**

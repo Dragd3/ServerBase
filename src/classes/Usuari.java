@@ -1,31 +1,33 @@
 package classes;
 
 //package server.model;
-
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author EMiF
  */
-public class Usuari implements Serializable{
+public class Usuari implements Serializable {
 
-    //Cap atribut pot ser null
     private String user;
     private String password;
     private String mail;
     private String birth;
     private boolean admin = false;
-    
-    public Usuari(){}
-    
-    public Usuari(String user, String pwd, String mail, String birth){
+    List<Integer> esvedeniments = new ArrayList<Integer>();
+    List<Integer> assistencies = new ArrayList<Integer>();
+
+    public Usuari() {
+    }
+
+    public Usuari(String user, String pwd, String mail, String birth) {
         this.user = user;
         this.password = pwd;
         this.mail = mail;
         this.birth = birth;
     }
-
 
     public String getUser() {
         return user;
@@ -66,12 +68,33 @@ public class Usuari implements Serializable{
     public void setAdmin(boolean admin) {
         this.admin = admin;
     }
-    
-    @Override
-    public String toString(){
-        return "Usuari {username=" + user + ", password=" + password + ", " + 
-                "mail=" + mail + ", birth=" + birth + ", admin=" + admin + "}";
+
+    public List<Integer> getEsvedeniments() {
+        return esvedeniments;
+    }
+
+    public void setEsvedeniments(List<Integer> esvedeniments) {
+        this.esvedeniments = esvedeniments;
+    }
+
+    public void addEsdeveniments(int e) {
+        this.esvedeniments.add(e);
+    }
+
+    public List<Integer> getAssistencies() {
+        return assistencies;
+    }
+
+    public void setAssistencies(List<Integer> assistencies) {
+        this.assistencies = assistencies;
     }
     
+    @Override
+    public String toString() {
+        return "Usuari {username=" + user + ", password=" + password + ", "
+                + "mail=" + mail + ", birth=" + birth + ", admin=" + admin + 
+                "esdeveniments=" + getEsvedeniments().toString() +
+                "assistencies=" + getAssistencies().toString() + "}";
+    }
 
 }

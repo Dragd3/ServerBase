@@ -1,6 +1,7 @@
 package classes;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,7 +16,7 @@ public class Esdeveniment implements Serializable{
     private String data;
     private String tema;
     private String lloc;
-    private List<String> participants;
+    private List<String> participants = new ArrayList<String>();
     private int max;
     private boolean ple = false;
     private int id;
@@ -32,6 +33,21 @@ public class Esdeveniment implements Serializable{
         this.lloc = lloc;
         participants.add(creador);
         this.max = maxParticipants;
+    }
+    
+    public Esdeveniment(String t, String c, String creador, String d, 
+            String tema, String lloc, List<String> goers, int maxParticipants, 
+            int id, boolean complete){
+        this.titol = t;
+        this.contingut = c;
+        this.creador = creador;
+        this.data = d;
+        this.tema = tema;
+        this.lloc = lloc;
+        this.participants = goers;
+        this.max = maxParticipants;
+        this.id = id;
+        this.ple = complete;
     }
     
     
