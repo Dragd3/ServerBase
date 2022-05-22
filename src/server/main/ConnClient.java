@@ -108,6 +108,7 @@ public class ConnClient extends Thread {
                             break;
                         case "21":
                             a.removeEsdeveniment(sessio, dataOut, dataIn);
+                            break;
                         case "22":
                             a.showEsdeveniments(sessio, dataOut, dataIn, out);
                             break;
@@ -194,6 +195,12 @@ public class ConnClient extends Thread {
         }
     }
 
+    /**
+     * Comprova si un Usuari esta a la llista de sessions
+     * 
+     * @param user String amb el nom d'Usuari a cercar
+     * @return boolean indicant si ho esta o no
+     */
     public boolean isUserOnline(String user) {
         for (Usuari u : sessions.values()) {
             if (u.getUser().equals(user)) {
@@ -203,6 +210,12 @@ public class ConnClient extends Thread {
         return false;
     }
 
+    /**
+     * Retorna el codi d'un Usuari connectat
+     * 
+     * @param user String amb el nom d'Usuari a cercar
+     * @return String del codi del Usuari. Null si no existeix
+     */
     public String getCodi(String user) {
         for (String s : sessions.keySet()) {
             if (getUsuari(s).getUser().equals(user)) {

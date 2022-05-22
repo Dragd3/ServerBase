@@ -39,52 +39,36 @@ public class clientConsola {
             String codi;
             clientConsola c = new clientConsola();
 
-            Esdeveniment e = new Esdeveniment("Esdeveniment prova",
-                    "Prova a Hospitalet",
-                    "UsuariProva",
+            Esdeveniment e = new Esdeveniment("Esdeveniment PROVA",
+                    "Prova a Barcelona",
+                    "admin3",
                     "2022-10-10",
                     "Proves",
                     "Hospitalet",
                     8);
 
-//            c.crearUsuari("UsuariProva", "123456789", "1990-09-09", "usuari@prova.up", ps, bin);
-//            codi = c.login("UsuariProva", "123456789", ps, bin);
-//            c.buscarUsuari(codi, ps, bin, in);
-//            c.canviarAdmin(codi, "UsuariProva", ps, bin);
+            codi = c.login("admin3", "admin333", ps, bin);
 
             List<Esdeveniment> esdevs = new ArrayList<Esdeveniment>();
-//            esdevs = c.mostrarEsdevParam(codi, "6", "pital", ps, bin, in);
-//            System.out.println(esdevs);
-//            e = esdevs.get(0);
-//            e.setLloc("Montcada");
-//            c.modificarEsdev(codi, e, ps, bin, out);
-//            esdevs = c.mostrarEsdev(codi, ps, bin, in);
-//            System.out.println(esdevs);
-//            c.modificarUsuari(codi, "UsuariProva", 1, "987654321", ps, bin);
-//            c.buscarUsuari(codi, ps, bin, in);
-//            c.logout(codi, ps, bin);
-            
-            codi = c.login("admin1", "admin", ps, bin);
-//            esdevs = c.mostrarEsdevParam(codi, "6", "pital", ps, bin, in);
-//            System.out.println(esdevs);
-//            e = esdevs.get(0);
-//            e.setLloc("Montcada");
-//            c.modificarEsdev(codi, e, ps, bin, out);
-//            c.afegirGoer(codi, ""+e.getId(), ps, bin);
-//            esdevs = c.mostrarEsdevParam(codi, "3", "UsuariProva", ps, bin, in);
-//            System.out.println(esdevs);
-//            c.treureGoer(codi, ""+e.getId(), ps, bin);
-//            esdevs = c.mostrarEsdevParam(codi, "5", "Proves", ps, bin, in);
-//            System.out.println(esdevs);
-//            c.esborrarEsdev(codi, e.getId(), ps, bin);
-//            esdevs = c.mostrarEsdev(codi, ps, bin, in);
-//            System.out.println(esdevs);
-            c.modificarUsuari(codi, "UsuariProva", 2, "mail@deprova.ok", ps, bin);
-            c.canviarAdmin(codi, "UsuariProva", ps, bin);
+            esdevs = c.mostrarEsdev(codi, ps, bin, in);
+            System.out.println(esdevs);
+            //c.crearEsdev(codi, e, ps, bin, out, in);
+            esdevs = c.mostrarEsdevParam(codi, "5", "rov", ps, bin, in);
+            e = esdevs.get(0);
+            e.setLloc("Montcada");
+            e.setCreador("admin2");
+            c.modificarEsdev(codi, e, ps, bin, out);
+            esdevs = c.mostrarEsdevParam(codi, "3", "admin2", ps, bin, in);
+            System.out.println(esdevs);
+            /*c.afegirGoer(codi, "admin", ps, bin);
+            c.afegirGoer(codi, "admin2", ps, bin);
+            esdevs = c.mostrarEsdev(codi, ps, bin, in);
+            System.out.println(esdevs);
+            c.esborrarEsdev(codi, e.getId(), ps, bin);
+            esdevs = c.mostrarEsdev(codi, ps, bin, in);
+            System.out.println(esdevs);*/
             c.logout(codi, ps, bin);
-            codi = c.login("UsuariProva", "987654321", ps, bin);
-            c.esborrarUsuari(codi, "UsuariProva", ps, bin);
-            
+
             ps.println(";");
 
         } catch (IOException ex) {
@@ -124,13 +108,13 @@ public class clientConsola {
         ps.println(mail);
         System.out.println(bin.readLine());
     }
-    
-    public void esborrarUsuari(String codi, String user, PrintStream ps, BufferedReader bin) throws IOException{
+
+    public void esborrarUsuari(String codi, String user, PrintStream ps, BufferedReader bin) throws IOException {
         ps.println(11);
         ps.println(codi);
         ps.println(user);
         System.out.println(bin.readLine());
-        
+
     }
 
     public void buscarUsuari(String codi, PrintStream ps, BufferedReader bin, ObjectInputStream in) throws IOException {
@@ -152,7 +136,7 @@ public class clientConsola {
         System.out.println(bin.readLine());
     }
 
-    public void modificarUsuari(String codi, String user, int param, String value, PrintStream ps, BufferedReader bin) throws IOException{
+    public void modificarUsuari(String codi, String user, int param, String value, PrintStream ps, BufferedReader bin) throws IOException {
         ps.println(15);
         ps.println(codi);
         ps.println(user);
@@ -160,12 +144,12 @@ public class clientConsola {
         ps.println(value);
         System.out.println(bin.readLine());
     }
-        
+
     public Usuari crearEsdev(String codi, Esdeveniment e, PrintStream ps, BufferedReader bin, ObjectOutputStream out, ObjectInputStream in) throws IOException {
         ps.println(20);
         ps.println(codi);
+        ps.println("READY");
         out.writeObject(e);
-        out.flush();
         String reply = bin.readLine();
         if (reply.equals("READY")) {
             try {
@@ -178,8 +162,8 @@ public class clientConsola {
         System.out.println(reply);
         return null;
     }
-    
-    public void esborrarEsdev(String codi, int id, PrintStream ps, BufferedReader bin) throws IOException{
+
+    public void esborrarEsdev(String codi, int id, PrintStream ps, BufferedReader bin) throws IOException {
         ps.println(21);
         ps.println(codi);
         ps.println(id);
@@ -191,6 +175,7 @@ public class clientConsola {
         ps.println(codi);
         String reply = bin.readLine();
         if (reply.equals("READY")) {
+            ps.println("READY");
             try {
                 List<Esdeveniment> esdev = (ArrayList) in.readObject();
                 return esdev;
@@ -210,6 +195,7 @@ public class clientConsola {
         ps.println(v);
         String reply = bin.readLine();
         if (reply.equals("READY")) {
+            ps.println("READY");
             try {
                 List<Esdeveniment> esdev = (ArrayList) in.readObject();
                 return esdev;
@@ -221,12 +207,15 @@ public class clientConsola {
         }
         return null;
     }
-    
+
     public void modificarEsdev(String codi, Esdeveniment e, PrintStream ps, BufferedReader bin, ObjectOutputStream out) throws IOException {
         ps.println(24);
         ps.println(codi);
-        out.writeObject(e);
-        out.flush();
+        ps.println("READY");
+        if (bin.readLine().equals("READY")) {
+            out.writeObject(e);
+            out.flush();
+        }
         System.out.println(bin.readLine());
     }
 

@@ -338,9 +338,10 @@ public class Crides {
 
     /* ********** CONSULTA ********** */
     /**
-     *
-     * @param user
-     * @return
+     * Retorna un Usuari pasant el seu nom
+     * 
+     * @param user String del nom de l'Usuari a cercar
+     * @return Usuari buscar o null si no existeix
      */
     public Usuari showUsuari(String user) {
         String cons = "SELECT * FROM accounts WHERE username = ?";
@@ -368,7 +369,7 @@ public class Crides {
     /**
      * Retorna una List amb tots els esdeveniments
      *
-     * @return List<Esdeveniment>
+     * @return List<Esdeveniment> de tots els esdeveniments o Null si no existis
      */
     public List<Esdeveniment> showEsdeveniments() {
         String cons = "SELECT * FROM events";
@@ -536,6 +537,12 @@ public class Crides {
     }
 
     /* ********** ESBORRAR ********** */
+    /**
+     * Esborra un usuari de la base de dades
+     * 
+     * @param user Usuari a esborrar
+     * @return boolean indicant si l'accio s'ha dut a terme o no
+     */
     public boolean deleteUsuari(Usuari user) {
         if (!user.getEsvedeniments().isEmpty()) {
             for (int i : user.getEsvedeniments()) {
@@ -559,6 +566,12 @@ public class Crides {
         return false;
     }
 
+    /**
+     * Esborra un Esdeveniment de la BBDD
+     * 
+     * @param id int amb l'identificador de l'Esdeveniment
+     * @return boolean indicant si l'accio s'ha dut a terme o no
+     */
     public boolean deleteEsdeveniment(int id) {
         String cons = "SELECT goers FROM events WHERE id = ?";
         List<String> goers = new ArrayList<String>();

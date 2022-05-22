@@ -6,7 +6,7 @@ import java.util.List;
 
 /**
  *
- * @author prova1
+ * @author EMiF
  */
 public class Esdeveniment implements Serializable{
     
